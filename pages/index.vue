@@ -4,7 +4,8 @@
         <NuxtLink to="/subjects">Предметы</NuxtLink>
         <NuxtLink to="/groups">Группы</NuxtLink>
         <NuxtLink to="/auditories">Аудитории</NuxtLink>
+        <NuxtLink to="/ScheduleByGroup">Расписание группы</NuxtLink>
+
         <NuxtLink to="/generator">генерация</NuxtLink>
-        <NuxtLink to="/period">Периоды</NuxtLink>
     </div>
 </template>

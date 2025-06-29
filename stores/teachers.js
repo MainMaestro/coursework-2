@@ -1,4 +1,3 @@
-
 const STORAGE_KEY = "schedule-teachers";
 
 export const useTeachersStore = defineStore("teachers", {

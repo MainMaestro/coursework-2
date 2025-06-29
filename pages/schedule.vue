@@ -9,7 +9,7 @@
       Группа: {{ groupName(item.groupId) }}<br />
       Предмет: {{ subjectName(item.subjectId) }}<br />
       Преподаватель: {{ teacherName(item.teacherId) }}<br />
-      Аудитория: {{ auditoriumName(item.auditoriumId) }}<br />
+      Аудитория: {{ auditoriumName(entry.auditoryId) }}<br />
       Тип: {{ item.type }}
     </div>
   </div>

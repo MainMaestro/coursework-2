@@ -13,13 +13,13 @@ export const useSubjectsStore = defineStore('subjects', {
       this.subjects.push(subject)
       this.saveToStorage()
     },
-    updateSubject(id, updated) {
-      const index = this.subjects.findIndex(s => s.id === id)
-      if (index !== -1) {
-        this.subjects[index] = { ...this.subjects[index], ...updated }
-        this.saveToStorage()
-      }
-    },
+    updateSubject(id, newData) {
+  const index = this.subjects.findIndex(s => s.id === id)
+  if (index !== -1) {
+    this.subjects[index] = { ...this.subjects[index], ...newData }
+    this.saveToStorage()
+  }
+},
     removeSubject(id) {
       this.subjects = this.subjects.filter(s => s.id !== id)
       this.saveToStorage()

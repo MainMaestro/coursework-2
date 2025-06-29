@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 max-w-5xl mx-auto">
     <h1 class="text-2xl font-bold mb-6">Расписание по группе</h1>
-
+    <a href="/">Меню</a>
     <div class="mb-4">
       <label class="font-semibold mr-2">Выберите группу:</label>
       <select v-model="selectedGroupId" class="border rounded px-4 py-2">
@@ -20,7 +20,6 @@
           <th class="p-2 border">Предмет</th>
           <th class="p-2 border">Преподаватель</th>
           <th class="p-2 border">Аудитория</th>
-          <th class="p-2 border">Тип</th>
         </tr>
       </thead>
       <tbody>
@@ -33,8 +32,7 @@
           <td class="border px-2 py-1">{{ timeOfSlot(entry.slot) }}</td>
           <td class="border px-2 py-1">{{ subjectName(entry.subjectId) }}</td>
           <td class="border px-2 py-1">{{ teacherName(entry.teacherId) }}</td>
-          <td class="border px-2 py-1">{{ auditoriumName(entry.auditoriumId) }}</td>
-          <td class="border px-2 py-1">{{ entry.type }}</td>
+          <td class="border px-2 py-1">{{ auditoriumName(entry.auditoryId) }}</td>
         </tr>
       </tbody>
     </table>
@@ -48,38 +46,48 @@ import { daysOfWeek, lessonSlots } from '@/utils/schedule-data'
 
 const groupsStore = useGroupsStore()
 const scheduleStore = useScheduleStore()
-const teachers = useTeachersStore()
-const subjects = useSubjectsStore()
-const auditories = useAuditoriesStore()
+const teachersStore = useTeachersStore()
+const subjectsStore = useSubjectsStore()
+const auditoriesStore = useAuditoriesStore()
 
 onMounted(() => {
   groupsStore.loadFromStorage()
   scheduleStore.loadFromStorage()
-  teachers.loadFromStorage()
-  subjects.loadFromStorage()
-  auditories.loadFromStorage()
+  teachersStore.loadFromStorage()
+  subjectsStore.loadFromStorage()
+  auditoriesStore.loadFromStorage()
 })
 
 const selectedGroupId = ref('')
 const groups = computed(() => groupsStore.groups)
 
+watchEffect(() => {
+  if (!selectedGroupId.value && groups.value.length > 0) {
+    selectedGroupId.value = groups.value[0].id
+  }
+})
+
 const groupSchedule = computed(() =>
   scheduleStore.schedule.filter((e) => e.groupId === selectedGroupId.value)
 )
 
-const sortedSchedule = computed(() =>
-  [...groupSchedule.value].sort((a, b) => {
-    if (a.day !== b.day) return a.day.localeCompare(b.day)
+const sortedSchedule = computed(() => {
+  const dayOrder = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+  return [...groupSchedule.value].sort((a, b) => {
+    const dayA = dayOrder.indexOf(a.day)
+    const dayB = dayOrder.indexOf(b.day)
+    if (dayA !== dayB) return dayA - dayB
     return a.slot - b.slot
   })
-)
+})
+
 
 const dayName = (id) => daysOfWeek.find((d) => d.id === id)?.name || id
 const timeOfSlot = (id) => lessonSlots.find((s) => s.id === id)?.time || ''
 const subjectName = (id) =>
-  subjects.subjects.find((s) => s.id === id)?.name || id
+  subjectsStore.subjects.find((s) => s.id === id)?.name || id
 const teacherName = (id) =>
-  teachers.teachers.find((t) => t.id === id)?.name || id
+  teachersStore.teachers.find((t) => t.id === id)?.name || id
 const auditoriumName = (id) =>
-  auditories.auditories.find((a) => a.id === id)?.name || id
+  auditoriesStore.auditories.find((a) => a.id === id)?.name || id
 </script>

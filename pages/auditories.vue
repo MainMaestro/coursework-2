@@ -22,6 +22,8 @@
         <option disabled value="">Выберите тип аудитории</option>
         <option value="общая">Общая</option>
         <option value="компьютерная">Компьютерная</option>
+        <option value="спортзал">спортзал</option>
+
       </select>
       <button
         class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 duration-300 ease-in cursor-pointer"
@@ -65,6 +67,8 @@
       <select v-model="editData.type" class="border rounded px-2 py-1 w-full">
         <option value="общая">Общая</option>
         <option value="компьютерная">Компьютерная</option>
+        <option value="спортзал">спортзал</option>
+
       </select>
     </div>
   </div>
