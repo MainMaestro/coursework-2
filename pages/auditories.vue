@@ -31,25 +31,72 @@
     </form>
 
     <ul class="space-y-4">
-      <li
-        v-for="a in auditories"
-        :key="a.id"
-        class="flex justify-between items-start bg-white shadow p-4 rounded"
+     <li
+  v-for="a in auditories"
+  :key="a.id"
+  class="flex justify-between items-start bg-white shadow p-4 rounded"
+>
+  <div class="flex-1 space-y-1">
+    <div v-if="editId !== a.id">
+      <div class="font-semibold">{{ a.name }}</div>
+      <div class="text-sm text-gray-500">Вместимость: {{ a.capacity }}</div>
+      <div class="text-sm text-gray-500">
+        {{ a.isShared ? "Можно объединять группы" : "Только одна группа" }}
+      </div>
+      <div class="text-sm text-gray-500">Тип: {{ a.type || "не указан" }}</div>
+    </div>
+
+    <div v-else class="space-y-2">
+      <input
+        v-model="editData.name"
+        class="border rounded px-2 py-1 w-full"
+        placeholder="Название"
+      />
+      <input
+        type="number"
+        v-model.number="editData.capacity"
+        class="border rounded px-2 py-1 w-full"
+        placeholder="Вместимость"
+      />
+      <label class="flex items-center space-x-2">
+        <input type="checkbox" v-model="editData.isShared" />
+        <span class="text-sm">Можно объединять группы</span>
+      </label>
+      <select v-model="editData.type" class="border rounded px-2 py-1 w-full">
+        <option value="общая">Общая</option>
+        <option value="компьютерная">Компьютерная</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex flex-col items-end gap-1">
+    <button
+      v-if="editId !== a.id"
+      @click="startEdit(a)"
+      class="text-blue-600 hover:underline"
+    >
+      Редактировать
+    </button>
+    <template v-else>
+      <button
+        @click="saveEdit(a.id)"
+        class="text-green-600 hover:underline"
       >
-        <div>
-          <div class="font-semibold">{{ a.name }}</div>
-          <div class="text-sm text-gray-500">Вместимость: {{ a.capacity }}</div>
-          <div class="text-sm text-gray-500">
-            {{ a.isShared ? "Можно объединять группы" : "Только одна группа" }}
-          </div>
-          <div class="text-sm text-gray-500">
-            Тип: {{ a.type || "не указан" }}
-          </div>
-        </div>
-        <button @click="remove(a.id)" class="text-red-600 hover:underline">
-          Удалить
-        </button>
-      </li>
+        Сохранить
+      </button>
+      <button
+        @click="cancelEdit"
+        class="text-gray-500 hover:underline text-sm"
+      >
+        Отмена
+      </button>
+    </template>
+    <button @click="remove(a.id)" class="text-red-600 hover:underline">
+      Удалить
+    </button>
+  </div>
+</li>
+
     </ul>
   </div>
 </template>
@@ -64,6 +111,30 @@ const type = ref('')
 onMounted(() => {
   store.loadFromStorage()
 })
+const editId = ref(null)
+const editData = reactive({
+  name: '',
+  capacity: 30,
+  isShared: false,
+  type: ''
+})
+
+function startEdit(aud) {
+  editId.value = aud.id
+  editData.name = aud.name
+  editData.capacity = aud.capacity
+  editData.isShared = aud.isShared
+  editData.type = aud.type
+}
+
+function saveEdit(id) {
+  store.updateAuditory(id, { ...editData })
+  editId.value = null
+}
+
+function cancelEdit() {
+  editId.value = null
+}
 
 const auditories = computed(() => store.auditories)
 

@@ -1,23 +1,21 @@
 <template>
-  <div class="max-w-xl mx-auto p-4 bg-white rounded shadow space-y-4">
-    <h2 class="text-xl font-semibold">Добавить преподавателя</h2>
+  <div class="p-6 max-w-3xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Преподаватели</h1>
+    <a href="/" class="text-blue-600 underline block mb-4">Меню</a>
 
-    <div>
-      <label class="block font-medium mb-1">ФИО преподавателя</label>
+    <form @submit.prevent="addNewTeacher" class="flex flex-col gap-4 mb-8">
       <input
-        v-model="teacher.name"
+        v-model="name"
         type="text"
-        class="w-full border rounded p-2"
-        placeholder="Иванов Иван Иванович"
+        placeholder="ФИО преподавателя"
+        class="border px-4 py-2 rounded w-full"
       />
-    </div>
 
-    <div>
-      <label class="block font-medium mb-1">Предметы</label>
+      <label class="font-medium">Предметы</label>
       <select
-        v-model="teacher.subjects"
+        v-model="selectedSubjects"
         multiple
-        class="w-full border rounded p-2 h-32"
+        class="border rounded p-2 h-32 w-full"
       >
         <option
           v-for="subject in subjects"
@@ -27,23 +25,45 @@
           {{ subject.name }}
         </option>
       </select>
-    </div>
 
-    <button
-      @click="saveTeacher"
-      class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
-    >
-      Сохранить
-    </button>
+      <button
+        class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded w-fit"
+      >
+        Добавить
+      </button>
+    </form>
 
-    <div v-if="saved" class="text-green-600 mt-2">Сохранено!</div>
+    <ul class="space-y-4">
+      <li
+        v-for="t in teachers"
+        :key="t.id"
+        class="flex justify-between items-start bg-white shadow p-4 rounded"
+      >
+        <div>
+          <div class="font-semibold">{{ t.name }}</div>
+          <div class="text-sm text-gray-500">
+            Ведёт:
+            <ul class="list-disc list-inside">
+              <li v-for="s in t.subjects" :key="s">
+                {{ subjectName(s) }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <button @click="remove(t.id)" class="text-red-600 hover:underline">
+          Удалить
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script setup>
-
 const subjectsStore = useSubjectsStore()
 const teachersStore = useTeachersStore()
+
+const name = ref('')
+const selectedSubjects = ref([])
 
 onMounted(() => {
   subjectsStore.loadFromStorage()
@@ -51,27 +71,28 @@ onMounted(() => {
 })
 
 const subjects = computed(() => subjectsStore.subjects)
+const teachers = computed(() => teachersStore.teachers)
 
-const teacher = reactive({
-  id: Date.now().toString(),
-  name: '',
-  subjects: [] // Массив subject.id
-})
+function subjectName(id) {
+  return subjects.value.find(s => s.id === id)?.name || id
+}
 
-const saved = ref(false)
+function addNewTeacher() {
+  if (!name.value.trim() || selectedSubjects.value.length === 0) {
+    return alert('Введите имя и выберите хотя бы один предмет')
+  }
 
-function saveTeacher() {
-  if (!teacher.name || teacher.subjects.length === 0) return
+  teachersStore.addTeacher({
+    id: Date.now().toString(),
+    name: name.value.trim(),
+    subjects: [...selectedSubjects.value]
+  })
 
-  teachersStore.teachers.push({ ...teacher })
-  teachersStore.saveToStorage()
-  saved.value = true
+  name.value = ''
+  selectedSubjects.value = []
+}
 
-  // сброс формы
-  teacher.id = Date.now().toString()
-  teacher.name = ''
-  teacher.subjects = []
-
-  setTimeout(() => (saved.value = false), 2000)
+function remove(id) {
+  teachersStore.removeTeacher(id)
 }
 </script>
