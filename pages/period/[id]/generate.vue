@@ -102,3 +102,4 @@ const subjectName = (id) => subjectsStore.subjects.find((s) => s.id === id)?.nam
 const teacherName = (id) => t;
 const auditoriumName = (id) => auditoriesStore.auditories.find((a) => a.id === id)?.name || id;
 </script>
+ 
