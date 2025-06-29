@@ -1,3 +1,4 @@
+// stores/subjects.js
 import { defineStore } from 'pinia'
 
 const STORAGE_KEY = 'schedule-subjects'

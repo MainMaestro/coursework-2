@@ -1,3 +1,4 @@
+// stores/auditories.js
 import { defineStore } from 'pinia'
 
 const STORAGE_KEY = 'schedule-auditories'
