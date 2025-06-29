@@ -1,12 +1,12 @@
-// stores/schedule.js
-
 import { defineStore } from 'pinia'
 
 const STORAGE_KEY = 'schedule-auto'
 
 export const useScheduleStore = defineStore('schedule', {
   state: () => ({
-    schedule: []
+    schedule: [],
+    currentWeek: 1,
+    totalWeeks: 16
   }),
   actions: {
     setSchedule(entries) {
@@ -16,6 +16,9 @@ export const useScheduleStore = defineStore('schedule', {
     clearSchedule() {
       this.schedule = []
       this.saveToStorage()
+    },
+    setCurrentWeek(week) {
+      this.currentWeek = week
     },
     loadFromStorage() {
       const raw = localStorage.getItem(STORAGE_KEY)
